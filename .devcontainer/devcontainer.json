@@ -9,7 +9,10 @@
 		},
 		"ghcr.io/devcontainers/features/common-utils:1": {
 			"configureZshAsDefaultShell": true
-		}
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+        "version": "20"
+    }
 	},
 	"customizations": {
 		"vscode": {
