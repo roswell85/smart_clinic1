@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: patient_db
+    ports:
+      - "5432:5432"
+
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # CHANGE: Use 9092 for internal (Go) and 29092 for external (Windows)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "29092:29092" # External access port
+    #KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  # NEW: The Development Workspace
+  workspace:  
+    image: mcr.microsoft.com/devcontainers/go:1.24-bookworm
+    # Use a dash (-) for each volume entry
+    volumes:
+      - .:/workspaces/smart_clinic1:cached
+    # Command is a simple string or a list, but never a 'mapping'
+    command: sleep infinity
+    # Adding DNS here to fix the 'Could not resolve host' error
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - default

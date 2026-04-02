@@ -1,0 +1,15 @@
+# Go
+bin/
+main
+*.exe
+vendor/
+
+# Node/Next.js
+node_modules/
+.next/
+out/
+build/
+
+# Docker & Environment
+.env
+*.log
